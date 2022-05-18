@@ -1,5 +1,6 @@
-var hi = "hid"
-func test(the) {
-    print(the)
+#include print.e
+var hi = "hi"
+func test(g){
+  print(g)
 }
 test(hi)

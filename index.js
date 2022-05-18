@@ -52,27 +52,31 @@ if (String(file).includes('/')) {
 }
 const contents = fs.readFileSync(filePath).toString()
 const lines = contents.split('\n')
-var tokens = [], newcontent = '', funcs = [], cfile = '',filei = 0
+var tokens = [], newcontent = `from ${file}`, funcs = [], cfile = '',filen = 0
 lines.forEach((line) => {
   if (line.startsWith('#include')) {
     const contents = fs.readFileSync(line.replace('#include ','')).toString()
-    newcontent = `${newcontent}\nfrom: ${line.replace('#include ','')}\n${contents}\nfrom: test.e\n`
+    newcontent = `${newcontent}\nfrom ${line.replace('#include ','')}\n${contents}\nfrom ${file}\n`
+  }
+  if (line.includes("//")) {
+    const comment = line.substring(line.indexOf('//') + 1);
+    newcontent = `${newcontent}\n${line.replace(comment,'')}`
   }
   else {
     newcontent = `${newcontent}\n${line}`
   }
 })
 const newlines = newcontent.split('\n')
-newlines.forEach((line,i) => {
+newlines.forEach((line,n) => {
   regexp = new RegExp('^(?:' + funcs.join('|') + ')\\b');
   if (line.startsWith('from')) {
-    cfile = line.replace('from: ','')
-    filei = i
+    cfile = line.replace('from ','')
+    filen = n
   }
   else if (line.trim().startsWith('print')) {
     if (line.endsWith(")")) {tokens.push(new token('PRINT',getBetween(line,"(",")")[0]))}
     else {
-      console.error(`missing parantisess in print statement on line ${i-filei} of file ${cfile}`)
+      console.error(`missing parantisess in print statement on line ${n-filen} of file ${cfile}`)
       process.exit(1)
     }
   }
@@ -90,9 +94,8 @@ newlines.forEach((line,i) => {
     tokens.push(new token('FUNC_CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
   }
 })
-print(tokens)
-var code = ''
-tokens.forEach((token) => {
+var code = '', lastfunc
+tokens.forEach((token,i) => {
   if (token.type == "PRINT") {
     code = `${code}\nconsole.log(${token.val})`
   }
@@ -101,6 +104,7 @@ tokens.forEach((token) => {
   }
   else if (token.type == 'FUNC_DECLARE') {
     code = `${code}\nfunction ${token.val.name}(${token.val.args}) {`
+    lastfunc = i
   }
   else if (token.type == 'FUNC_END') {
     code = `${code}\n}`
