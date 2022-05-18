@@ -1,5 +1,5 @@
-var hi = ""
-func this(test) {
-    print(test)
+var hi = "hid"
+func test(the) {
+    print(the)
 }
-this(hi)
+test(hi)

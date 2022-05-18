@@ -28,7 +28,12 @@ function charPos(str, char) {
         .filter(function (v) { return v >= 0; });
 }
 function stringStartsWith(str, substrs) {
-    return substrs.some(substr => str.startsWith(substr));
+  substrs.forEach((substr) => {
+    if (str.startsWith(substr)) {
+      return true
+    }
+  })
+  return false
 }
 class token {
     constructor(type, val){
@@ -72,8 +77,8 @@ newlines.forEach((line,i) => {
     tokens.push(new token('VAR_DECLARE',{name: line.replace('var ','').split('=')[0].trim(), val: line.replace('var ').split('=')[1].trim()}))
   }
   else if (line.trim().startsWith('func')) {
-    tokens.push(new token('FUNC_DECLARE',{name: line.substring(4,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
-    funcs.push(line.substring(4,line.indexOf('(')))
+    tokens.push(new token('FUNC_DECLARE',{name: line.substring(5,line.indexOf('(')).trim(), args: getBetween(line,"(",")")[0]}))
+    funcs.push(line.substring(4,line.indexOf('(')).trim())
   }
   else if (line.trim().startsWith('}')) {
     tokens.push(new token('FUNC_END'))
@@ -82,6 +87,8 @@ newlines.forEach((line,i) => {
     tokens.push(new token('FUNC_CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
   }
 })
+print(tokens)
+print(funcs)
 var code = ''
 tokens.forEach((token) => {
   if (token.type == "PRINT") {
@@ -107,7 +114,4 @@ node.stderr.on('data', (data) => {
 })
 node.stdout.on('data', (data) => {
   console.log(`${data}`)
-})
-node.on('exit', (code) => {
-  fs.rmSync('file.js')
 })
