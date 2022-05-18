@@ -28,8 +28,10 @@ function charPos(str, char) {
         .filter(function (v) { return v >= 0; });
 }
 function stringStartsWith(str, substrs) {
+  print(str,substrs)
   substrs.forEach((substr) => {
     if (str.startsWith(substr)) {
+      print(true)
       return true
     }
   })
@@ -62,6 +64,7 @@ lines.forEach((line) => {
 })
 const newlines = newcontent.split('\n')
 newlines.forEach((line,i) => {
+  regexp = new RegExp('^(?:' + funcs.join('|') + ')\\b');
   if (line.startsWith('from')) {
     cfile = line.replace('from: ','')
     filei = i
@@ -83,12 +86,11 @@ newlines.forEach((line,i) => {
   else if (line.trim().startsWith('}')) {
     tokens.push(new token('FUNC_END'))
   }
-  else if (stringStartsWith(line, funcs)) {
+  else if (regexp.test(line)) {
     tokens.push(new token('FUNC_CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
   }
 })
 print(tokens)
-print(funcs)
 var code = ''
 tokens.forEach((token) => {
   if (token.type == "PRINT") {
