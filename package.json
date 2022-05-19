@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node index.js print.e"
+    "run": "node index.js test.e",
+    "test": "node test.js"
   },
   "author": "",
   "license": "MIT"

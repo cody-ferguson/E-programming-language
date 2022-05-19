@@ -74,7 +74,21 @@ newlines.forEach((line,n) => {
     filen = n
   }
   else if (line.trim().startsWith('print')) {
-    if (line.endsWith(")")) {tokens.push(new token('PRINT',getBetween(line,"(",")")[0]))}
+    if (line.endsWith(")")) {
+      let content = getBetween(line,"(",")")[0]
+      if (/("?(?:\w*)"?) in ("?(?:\w*)"?)/.test(content)) {
+        let matches = content.match(/("?(?:\w*)"?) in ("?(?:\w*)"?)/)
+        tokens.push(new token('PRINT',new token("IN",{first: matches[1], second: matches[2]})))
+      }
+      else if (/("?(?:\w*)"?) = ("?(?:\w*)"?)/.test(content)) {
+        let matches = content.match(/("?(?:\w*)"?) = ("?(?:\w*)"?)/)
+        tokens.push(new token('PRINT',new token("EQUAL",{first: matches[1], second: matches[2]})))
+      }
+      else {
+        let content = getBetween(line,"(",")")[0]
+        tokens.push(new token('PRINT',content))
+      }
+    }
     else {
       console.error(`missing parantisess in print statement on line ${n-filen} of file ${cfile}`)
       console.error(line)
@@ -106,17 +120,24 @@ newlines.forEach((line,n) => {
     tokens.push(new token('FUNC.CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
   }
 })
-var code = '', lastfunc
-tokens.forEach((token,i) => {
+var code = ''
+tokens.forEach((token) => {
   if (token.type == "PRINT") {
-    code = `${code}\nconsole.log(${token.val})`
+    if (token.val.type == 'IN') {
+      code = `${code}\nconsole.log(${token.val.val.second}.includes(${token.val.val.first}))`
+    }
+    else if (token.val.type == 'EQUAL') {
+      code = `${code}\nconsole.log(${token.val.val.second} == ${token.val.val.first})`
+    }
+    else {
+      code = `${code}\nconsole.log(${token.val})`
+    }
   }
   else if (token.type == "VAR.DECLARE") {
     code = `${code}\nvar ${token.val.name} = ${token.val.val}`
   }
   else if (token.type == 'FUNC.DECLARE') {
     code = `${code}\nfunction ${token.val.name}(${token.val.args}) {`
-    lastfunc = i
   }
   else if (token.type == 'IF') {
     if (token.val.type == 'IN') {

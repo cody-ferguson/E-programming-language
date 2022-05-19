@@ -6,6 +6,7 @@ The E programming language is built off node.js and currently requires [node.js]
 This will not be the case in the future, but for now, I will not be releasing binaries for this just because features will be added so frequently. 
 Feel free to download the source code and make your own binaries, but please don't release them.
 # Statements
+## Simple summary
 ```
 // comment
 ```
@@ -29,12 +30,47 @@ print("Meme = hello world")
 ```
 Prints to console.<br><br>
 ```
-if ("hello" in "hello world")
+if ("hello" in "hello world") {
+  // true
+}
 ```
 
 Checks if first thing is in second thing<br><br>
 ```
-if ("hello" = "hello world")
+if ("hello" = "hello world") {
+  // false
+}
 ```
 
 Checks if first thing equals second thing
+
+## Detailed explaination
+### Print
+Translates from this format,
+```
+print("Meme = hello world")
+```
+to this in javascript.
+```
+console.log("Meme = hello world")
+```
+
+### In
+Translates from this format,
+```
+"hello" in "hello world"
+```
+to this in javascript.
+```
+"hello world".includes("hello")
+```
+
+### Equals
+Translates from this format,
+```
+"hello" = "hello world"
+```
+to this in javascript.
+```
+"hello" == "hello world"
+```
