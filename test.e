@@ -1,5 +1,5 @@
-var hi = "hello world"
+var hi = "he"
 
-if ("he" in hi) {
+if ("he" = hi) {
 print(true)
 }

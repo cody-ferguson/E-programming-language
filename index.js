@@ -97,6 +97,10 @@ newlines.forEach((line,n) => {
       let matches = content.match(/("?(?:\w*)"?) in ("?(?:\w*)"?)/)
       tokens.push(new token('IF',new token("IN",{first: matches[1], second: matches[2]})))
     }
+    else if (/("?(?:\w*)"?) = ("?(?:\w*)"?)/.test(content)) {
+      let matches = content.match(/("?(?:\w*)"?) = ("?(?:\w*)"?)/)
+      tokens.push(new token('IF',new token("EQUAL",{first: matches[1], second: matches[2]})))
+    }
   }
   else if (regexp.test(line)) {
     tokens.push(new token('FUNC.CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
@@ -117,6 +121,9 @@ tokens.forEach((token,i) => {
   else if (token.type == 'IF') {
     if (token.val.type == 'IN') {
       code = `${code}\nif (${token.val.val.second}.includes(${token.val.val.first})) {`
+    }
+    else if (token.val.type == 'EQUAL') {
+      code = `${code}\nif (${token.val.val.second} == ${token.val.val.first}) {`
     }
   }
   else if (token.type == 'BRACKETS.END') {

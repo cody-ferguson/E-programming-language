@@ -32,4 +32,9 @@ Prints to console.<br><br>
 if ("hello" in "hello world")
 ```
 
-Checks if first thing is in second thing
+Checks if first thing is in second thing<br><br>
+```
+if ("hello" = "hello world")
+```
+
+Checks if first thing equals second thing
