@@ -77,21 +77,29 @@ newlines.forEach((line,n) => {
     if (line.endsWith(")")) {tokens.push(new token('PRINT',getBetween(line,"(",")")[0]))}
     else {
       console.error(`missing parantisess in print statement on line ${n-filen} of file ${cfile}`)
+      console.error(line)
       process.exit(1)
     }
   }
   else if (line.trim().startsWith('var')) {
-    tokens.push(new token('VAR_DECLARE',{name: line.replace('var ','').split('=')[0].trim(), val: line.replace('var ').split('=')[1].trim()}))
+    tokens.push(new token('VAR.DECLARE',{name: line.replace('var ','').split('=')[0].trim(), val: line.replace('var ').split('=')[1].trim()}))
   }
   else if (line.trim().startsWith('func')) {
-    tokens.push(new token('FUNC_DECLARE',{name: line.substring(5,line.indexOf('(')).trim(), args: getBetween(line,"(",")")[0]}))
+    tokens.push(new token('FUNC.DECLARE',{name: line.substring(5,line.indexOf('(')).trim(), args: getBetween(line,"(",")")[0]}))
     funcs.push(line.substring(4,line.indexOf('(')).trim())
   }
   else if (line.trim().startsWith('}')) {
-    tokens.push(new token('FUNC_END'))
+    tokens.push(new token('BRACKETS.END'))
+  }
+  else if (line.trim().startsWith('if')){
+    let content = getBetween(line,"(",")")[0]
+    if (/("?(?:\w*)"?) in ("?(?:\w*)"?)/.test(content)) {
+      let matches = content.match(/("?(?:\w*)"?) in ("?(?:\w*)"?)/)
+      tokens.push(new token('IF',new token("IN",{first: matches[1], second: matches[2]})))
+    }
   }
   else if (regexp.test(line)) {
-    tokens.push(new token('FUNC_CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
+    tokens.push(new token('FUNC.CALL',{name: line.substring(0,line.indexOf('(')), args: getBetween(line,"(",")")[0]}))
   }
 })
 var code = '', lastfunc
@@ -99,22 +107,29 @@ tokens.forEach((token,i) => {
   if (token.type == "PRINT") {
     code = `${code}\nconsole.log(${token.val})`
   }
-  else if (token.type == "VAR_DECLARE") {
+  else if (token.type == "VAR.DECLARE") {
     code = `${code}\nvar ${token.val.name} = ${token.val.val}`
   }
-  else if (token.type == 'FUNC_DECLARE') {
+  else if (token.type == 'FUNC.DECLARE') {
     code = `${code}\nfunction ${token.val.name}(${token.val.args}) {`
     lastfunc = i
   }
-  else if (token.type == 'FUNC_END') {
+  else if (token.type == 'IF') {
+    if (token.val.type == 'IN') {
+      code = `${code}\nif (${token.val.val.second}.includes(${token.val.val.first})) {`
+    }
+  }
+  else if (token.type == 'BRACKETS.END') {
     code = `${code}\n}`
   }
-  else if (token.type == 'FUNC_CALL') {
+  else if (token.type == 'FUNC.CALL') {
     code = `${code}\n${token.val.name}(${token.val.args})`
   }
 })
 fs.writeFileSync('file.js',code)
+
 const node = spawn('node',['file.js'])
+
 node.stderr.on('data', (data) => {
   console.error(data.toString())
 })

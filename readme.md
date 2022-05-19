@@ -27,4 +27,9 @@ Function declaration<br><br>
 ```
 print("Meme = hello world")
 ```
-Prints to console.
+Prints to console.<br><br>
+```
+if ("hello" in "hello world")
+```
+
+Checks if first thing is in second thing

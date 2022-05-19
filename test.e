@@ -1,6 +1,5 @@
-#include print.e
-var hi = "hi"
-func test(g){
-  print(g)
+var hi = "hello world"
+
+if ("he" in hi) {
+print(true)
 }
-test(hi)
