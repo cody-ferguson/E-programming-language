@@ -37,7 +37,7 @@ if ("hello" in "hello world") {
 
 Checks if first thing is in second thing<br><br>
 ```
-if ("hello" = "hello world") {
+if ("hello" equals "hello world") {
   // false
 }
 ```
@@ -68,7 +68,7 @@ to this in javascript.
 ### Equals
 Translates from this format,
 ```
-"hello" = "hello world"
+"hello" equals "hello world"
 ```
 to this in javascript.
 ```

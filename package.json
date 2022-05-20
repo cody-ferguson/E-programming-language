@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "node index.js test.e",
+    "run": "node index.js",
     "test": "node test.js"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "sade": "^1.8.1",
+    "yargs": "^17.5.1"
+  }
 }
